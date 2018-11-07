@@ -5,16 +5,18 @@ result_values=[]
 player_money=500
 player_bets=[]
 
-def number_bet():
+def number_bet(player_wallet):
     number_question=input("Voulez-vous miser sur un nombre? o/n  ")
     if number_question == "o":
-        number_bet=int(input("Quelle est votre mise ?  "))
+        number_bet=int(input("Combien misez-vous ?  "))
         number_input=int(input("Choisissez un nombre. Faites vos jeux!  "))
         player_bets.append(number_input)
         player_bets.append("Nombre")
         player_bets.append(number_bet)
+        player_wallet-=number_bet
+    return player_wallet
 
-def bet_questions(type1, type2):
+def bet_questions(player_wallet,type1, type2):
     question=input("Voulez-vous miser sur "+type1+"/"+type2+" o/n")
     if question=="o":
         bet=int(input("Combien voulez-vous miser"))
@@ -25,6 +27,8 @@ def bet_questions(type1, type2):
         elif choice =="2":
             player_bets.append(type2)
             player_bets.append(bet)
+        player_wallet-=bet
+    return player_wallet
 
 def tourne_roulette():
     print(" ")
@@ -70,70 +74,65 @@ def announce_result(result):
 
 def player_did_bet(value1_of_2, value2_of_2, bets_list):
     if value1_of_2 in bets_list:
-        print(bets_list.index(value1_of_2))
         return bets_list.index(value1_of_2)
     elif value1_of_2 in bets_list:
-        print(bets_list.index(value2_of_2))
         return bets_list.index(value2_of_2)
     else:
         return False
 
 
-def determine_gains(bet_type,bet, result, amount, multiplier, wallet):
+def determine_gains(bet_type,bet, result, amount, multiplier):
     gain_from_play=0
     if bet==result:
-        gain_from_play=int(amount)*multiplier
-        wallet+=gain_from_play
+        gain_from_play+=int(amount)*multiplier
         print("Vous gagnez "+str(gain_from_play)+" pour "+bet_type)
         
     else:
         print("Vous perdez pour "+bet_type)
+    return gain_from_play
 
-def play_roulette(player_bet, casino_result):
+def play_roulette(player_bet, casino_result, wallet):
     announce_result(tourne_roulette())
     print(player_bet)
     print(casino_result)
 
     if player_did_bet('Nombre','Nombre',player_bet):
-        print('results nombre')
         index_bet=player_did_bet('Nombre','Nombre',player_bet)
         index_amount= index_bet+1
-        print(index_bet)
-        print(index_amount)
-        determine_gains('Nombre',player_bet[index_bet], casino_result[1], player_bet[index_amount],36,player_money)
-        print("ready to go further")
-
+        wallet+=determine_gains('Nombre',player_bet[index_bet], casino_result[0], player_bet[index_amount],36)
+        print(wallet)
 
     if player_did_bet('Rouge','Noir',player_bet):
-        print('results rouge noir')
         index_bet=player_did_bet('Rouge','Noir',player_bet)
         index_amount= index_bet+1
-        determine_gains('Rouge/Noir',player_bet[index_bet], casino_result[1], player_bet[index_amount],2,player_money)
-        print("ready to go further")
+        wallet+=determine_gains('Rouge/Noir',player_bet[index_bet], casino_result[1], player_bet[index_amount],2)
+        print(wallet)
 
     if player_did_bet('Pair','Impair',player_bet):
-        print('results pair impair')
         index_bet=player_did_bet('Pair','Impair',player_bet)
         index_amount= index_bet+1
-        determine_gains('Pair/Impair',player_bet[index_bet], casino_result[1], player_bet[index_amount],2,player_money)
-        print("ready to go further")
+        wallet+=determine_gains('Pair/Impair',player_bet[index_bet], casino_result[2], player_bet[index_amount],2)
+        print(wallet)
 
     if player_did_bet('Passe','Manque',player_bet):
-        print ('results pass manque')
         index_bet=player_did_bet('Passe','Manque',player_bet)
         index_amount= index_bet+1
-        determine_gains('Passe/Manque',player_bet[index_bet], casino_result[1], player_bet[index_amount],2,player_money)
-        print("ready to go further")
-
-    print("Il vous reste "+str(player_money))
+        wallet+=determine_gains('Passe/Manque',player_bet[index_bet], casino_result[3], player_bet[index_amount],2)
+        print(wallet)
+        
+    print("Il vous reste "+str(wallet))
 
 
 
 #run
 print("Vous avez "+str(player_money)+" $")
-number_bet()
-bet_questions("Rouge","Noir")
-bet_questions("Pair","Impair")
-bet_questions("Manque","Passe")
+player_money=number_bet(player_money)
+print(player_money)
+player_money=bet_questions(player_money,"Rouge","Noir")
+print(player_money)
+player_money=bet_questions(player_money,"Pair","Impair")
+print(player_money)
+player_money=bet_questions(player_money,"Manque","Passe")
+print(player_money)
 print("Rien ne va plus")
-play_roulette(player_bets, result_values)
+play_roulette(player_bets, result_values, player_money)
