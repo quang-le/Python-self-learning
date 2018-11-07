@@ -75,7 +75,7 @@ def announce_result(result):
 def player_did_bet(value1_of_2, value2_of_2, bets_list):
     if value1_of_2 in bets_list:
         return bets_list.index(value1_of_2)
-    elif value1_of_2 in bets_list:
+    elif value2_of_2 in bets_list:
         return bets_list.index(value2_of_2)
     else:
         return False
@@ -121,18 +121,42 @@ def play_roulette(player_bet, casino_result, wallet):
         print(wallet)
         
     print("Il vous reste "+str(wallet))
+    return wallet
 
+def play_game(player_money):
+    player_money=number_bet(player_money)
+    print("Il vous reste "+str(player_money))
+    player_money=bet_questions(player_money,"Rouge","Noir")
+    print("Il vous reste "+str(player_money))
+    player_money=bet_questions(player_money,"Pair","Impair")
+    print("Il vous reste "+str(player_money))
+    player_money=bet_questions(player_money,"Manque","Passe")
+    print("Il vous reste "+str(player_money))
+    print("Rien ne va plus")
+    new_money=play_roulette(player_bets, result_values, player_money)
+    return new_money
 
+def continue_game(player_money):
+    continue_playing=input("Continuer à jouer ? o/n   ")
+    if continue_playing=="o":
+        play_game(player_money)
+        continue_game(player_money)
+    else:
+        print("Vous avez "+str(player_money)+". Merci d'avoir joué!")
 
 #run
 print("Vous avez "+str(player_money)+" $")
-player_money=number_bet(player_money)
-print(player_money)
-player_money=bet_questions(player_money,"Rouge","Noir")
-print(player_money)
-player_money=bet_questions(player_money,"Pair","Impair")
-print(player_money)
-player_money=bet_questions(player_money,"Manque","Passe")
-print(player_money)
-print("Rien ne va plus")
-play_roulette(player_bets, result_values, player_money)
+play_game(player_money)
+continue_game(player_money)
+
+#bug: le porte-monnaie se réinitialise à chaque partie
+#bug: réinitiliser les listes player_bets et results
+
+
+# test_gains_rouge=determine_gains("Rouge/Noir","Rouge","Rouge",50,2)
+# test_gains_noir=determine_gains("Rouge/Noir","Noir","Rouge",50,2)
+
+# test_list=["Rouge","Impair","Manque"]
+
+# test_bet= player_did_bet("Passe","Manque", test_list)
+# print(test_bet)
